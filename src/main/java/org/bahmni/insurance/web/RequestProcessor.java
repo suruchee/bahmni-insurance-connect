@@ -16,6 +16,7 @@ import org.bahmni.insurance.auth.AuthenticationFilter;
 import org.bahmni.insurance.client.RestTemplateFactory;
 import org.bahmni.insurance.dao.FhirResourceDaoServiceImpl;
 import org.bahmni.insurance.dao.IFhirResourceDaoService;
+import org.bahmni.insurance.model.ClaimLineItemRequest;
 import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.model.ClaimResponseModel;
 import org.bahmni.insurance.model.EligibilityResponseModel;
@@ -117,12 +118,34 @@ public class RequestProcessor {
 		return eligibilityResponseModel;
 
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/resubmit/fhir", produces = "application/json")
+	@ResponseBody
+	public ClaimResponseModel resubmitClaimFhir(HttpServletResponse response, @RequestBody String claimFhirEdited)
+			throws RestClientException, URISyntaxException, DataFormatException, IOException {
+		//logger.error("submitClaim : "+InsuranceUtils.mapToJson(claimParams));
+
+		logger.error("claimRequest : "+claimFhirEdited);
+		// String claimReqStr = FhirParser.encodeResourceToString(claimRequest);
+		if(properties.saveClaimResource) {
+			fhirDaoService.insertFhirResource(claimFhirEdited, ImisConstants.FHIR_RESOURCE_TYPE.CLAIM.getValue() );
+		}
+		fhirConstructorService.validateRequest(claimFhirEdited);
+		Claim claimRequest =  (Claim) FhirParser.parseResource(claimFhirEdited);
+		ClaimResponseModel claimResponseModel = insuranceImplFactory
+				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).submitClaim(claimRequest);
+		logger.error("claimResponseModel : " + InsuranceUtils.mapToJson(claimResponseModel));
+		return claimResponseModel;
+	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/submit/claim", produces = "application/json")
 	@ResponseBody
 	public ClaimResponseModel submitClaim(HttpServletResponse response, @RequestBody ClaimParam claimParams)
 			throws RestClientException, URISyntaxException, DataFormatException, IOException {
 		logger.error("submitClaim : "+InsuranceUtils.mapToJson(claimParams));
+
+		//claimParams.setClaimId("980"); // TODO: remove hard coded
+		
 		Claim claimRequest = fhirConstructorService.constructFhirClaimRequest(claimParams);
 		logger.error("claimRequest : "+FhirParser.encodeResourceToString(claimRequest));
 		String claimReqStr = FhirParser.encodeResourceToString(claimRequest);
@@ -147,7 +170,7 @@ public class RequestProcessor {
 	@ResponseBody
 	public ClaimResponseModel getClaimResponse(HttpServletResponse response,@PathVariable("claimId") String claimId)
 			throws IOException {
-		//claimId = "901"; //TODO: remove hardcoded
+		//claimId = "980"; //TODO: remove hardcoded
 		ClaimResponseModel claimResponseModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getClaimResponse(claimId);
 		System.out.println("claimResponseModel : " + InsuranceUtils.mapToJson(claimResponseModel));
@@ -178,6 +201,7 @@ public class RequestProcessor {
 	@RequestMapping(path = "/get/claimRequest/{claimId}")
 	@ResponseBody
 	public String getFhirClaim(@PathVariable("claimId") String claimId) {
+		//claimId = "980"; //TODO: remove hard coded
 		return fhirDaoService.getClaimRequestByClaimId(claimId);
 	}
 

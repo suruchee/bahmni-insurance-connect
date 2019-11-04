@@ -92,7 +92,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	@Override
 	public Claim constructFhirClaimRequest(ClaimParam claimParam) throws IOException {
 		
-		claimParam.setClaimId("903");
+		//claimParam.setClaimId("903");
 
 		//TODO: harcoded remove
 		/*claimParam.setVisitUUID("ce9b91a8-36b5-4e8b-9e48-e78fe81a0ceb"); 

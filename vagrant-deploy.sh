@@ -3,7 +3,7 @@ PATH_OF_CURRENT_DIRECTORY="$(pwd)"
 #source $PATH_OF_CURRENT_DIRECTORY/vagrant/vagrant_functions.sh
 
 
-IMIS_INTEGRATION_HOME="/vagrant/insurance-connect"
+IMIS_INTEGRATION_HOME="/bahmni/insurance-connect"
 
 echo "$IMIS_INTEGRATION_HOME"
 
