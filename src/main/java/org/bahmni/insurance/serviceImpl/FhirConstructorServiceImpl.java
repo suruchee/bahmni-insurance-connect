@@ -112,13 +112,11 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		// Insuree patient
 		Reference patientReference = new Reference();
 		patientReference.setReference("Patient/" + InsureeModel.getUuId());
-		System.out.println("Patient/" + claimParam.getInsureeId());
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
 		Period period = new Period();
 		VisitSummary visitDetails = bahmniApiService.getVisitDetail(claimParam.getVisitUUID());
-		System.out.println("Visit Details : "+InsuranceUtils.mapToJson(visitDetails));
 		period.setStart(new Date( visitDetails.getStartDateTime()));
 		if( visitDetails.getStopDateTime() != null) {
 			period.setEnd(new Date( visitDetails.getStopDateTime()));
@@ -126,7 +124,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		
 		CodeableConcept typeValue = new CodeableConcept();
 		if (ImisConstants.CLAIM_VISIT_TYPE.OPD.equals(visitDetails.getVisitType()) || ImisConstants.CLAIM_VISIT_TYPE.IPD.equals(visitDetails.getVisitType())) {
-			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.OTHERS_CODE);
+			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.OPD_CODE);
 		} else if (ImisConstants.CLAIM_VISIT_TYPE.EMERGENCY.equals(visitDetails.getVisitType())) {
 			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.EMERGENCY_CODE);
 		} else if (ImisConstants.CLAIM_VISIT_TYPE.REFFERALS.equals(visitDetails.getVisitType())) {
@@ -139,10 +137,9 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Diagnosis 
 
-		BahmniDiagnosis bahmniDianosis  =  bahmniApiService.getDiagnosis(claimParam.getPatientUUID(), claimParam.getVisitUUID(), new Date( visitDetails.getStartDateTime()));
+		BahmniDiagnosis bahmniDianosis  =  bahmniApiService.getDiagnosis(claimParam.getPatientUUID(), claimParam.getVisitUUID());
 		int sequence = 1;
 		for (Diagnosis diag :bahmniDianosis.getDiagnosis() ) {
-			System.out.println("diag.getAdditionalProperties().get(\"certainty\") : " + diag.getAdditionalProperties().get("certainty"));
 			if ("CONFIRMED".equals(diag.getAdditionalProperties().get("certainty"))){
 				Claim.DiagnosisComponent diagnosisComponent = new Claim.DiagnosisComponent();
 				CodeableConcept concept = new CodeableConcept();
@@ -222,7 +219,6 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		Reference patientReference = new Reference();
 		patientReference.setReference("Patient/" +chfID);
 		eligibilityRequest.setPatient(patientReference);
-		System.out.println(eligibilityRequest.setPatient(patientReference));
 
 		return eligibilityRequest;
 	}

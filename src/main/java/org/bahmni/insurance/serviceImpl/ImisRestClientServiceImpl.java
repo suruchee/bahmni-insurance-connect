@@ -145,7 +145,6 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		String jsonClaimRequest = FhirParser.encodeResourceToString(claimRequest);
 		ResponseEntity<String> responseObject = sendPostRequest(jsonClaimRequest, properties.openImisFhirApiClaim);
 		ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(responseObject.getBody());
-		System.out.println(FhirParser.encodeResourceToString(claimResponse));
 		BigDecimal totalclaimedAmount = claimRequest.getTotal().getValue();
 		return populateClaimRespModel(claimResponse, totalclaimedAmount);
 	}
@@ -285,8 +284,6 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	
 	@Override
 	public InsureeModel getInsuree(String chfID){
-		System.out.println(properties.imisUrl+"Patient/?identifier="+chfID);
-
 		String insureeStr = sendGetRequest(properties.imisUrl+"Patient/?identifier="+chfID);
 		//Patient patient = (Patient) FhirParser.parseResource(insureeStr);
 		Bundle bundle = (Bundle)FhirParser.parseResource(insureeStr);

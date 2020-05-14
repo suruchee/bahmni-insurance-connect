@@ -18,7 +18,6 @@ import org.bahmni.insurance.client.RestTemplateFactory;
 import org.bahmni.insurance.dao.FhirResourceDaoServiceImpl;
 import org.bahmni.insurance.dao.IFhirResourceDaoService;
 import org.bahmni.insurance.model.BahmniDiagnosis;
-import org.bahmni.insurance.model.ClaimLineItemRequest;
 import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.model.ClaimResponseModel;
 import org.bahmni.insurance.model.EligibilityResponseModel;
@@ -56,7 +55,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 @RestController
 public class RequestProcessor {
@@ -251,13 +249,13 @@ public class RequestProcessor {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}/{visitUUID}/{fromDate}", produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}/{visitUUID}", produces = "application/json")
 	@ResponseBody
 	public BahmniDiagnosis getDiagnosisDetails(HttpServletResponse response,@PathVariable("patientUUID")
-	String patientUUID,@PathVariable("visitUUID") String visitUUID,@PathVariable("fromDate")Date fromDate)
+	String patientUUID,@PathVariable("visitUUID") String visitUUID)
  throws JsonParseException, JsonMappingException, IOException {
-		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosis(patientUUID ,visitUUID,fromDate));
-		return bahmniOpenmrsService.getDiagnosis(patientUUID,visitUUID,fromDate);
+		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosis(patientUUID ,visitUUID));
+		return bahmniOpenmrsService.getDiagnosis(patientUUID,visitUUID);
 
 	}
 	
