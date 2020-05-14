@@ -11,7 +11,7 @@ public class InsureeModel {
 	private String address;
 	private String telephone;
 	
-	public static String getUuId() {
+	public String getUuId() {
 		return uuId;
 	}
 	public void setUuId(String uuId) {

@@ -59,6 +59,9 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	
 	@Autowired 
 	private BahmniOpenmrsApiClientServiceImpl bahmniApiService;
+	
+	@Autowired 
+	private ImisRestClientServiceImpl imisRestClientService;
 
 	@Override
 	public String getFhirPatient(String name) {
@@ -111,7 +114,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Insuree patient
 		Reference patientReference = new Reference();
-		patientReference.setReference("Patient/" + InsureeModel.getUuId());
+		InsureeModel insureeModel = imisRestClientService.getInsuree(claimParam.getInsureeId());
+		patientReference.setReference("Patient/" + insureeModel.getUuId());
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
